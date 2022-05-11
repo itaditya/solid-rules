@@ -5,12 +5,21 @@ import './App.css';
 function RuleBox(p) {
   return (
     <section class="rule-box">
-      <div class="operation">{p.operation}</div>
+      <div class="operation">
+        <select
+          value={p.operation}
+          onChange={[p.onChangeOperation, p.operationId]}
+        >
+          <option value="add">Add</option>
+          <option value="subtract">Subtract</option>
+          <option value="multiply">Multiply</option>
+        </select>
+      </div>
       <div class="operands">
         <For each={p.operands}>
           {(operand) => <div class="operand">{operand}</div>}
         </For>
-        <button onClick={[p.onAddOperand, p.operationId]}>Add</button>
+        <button onClick={[p.onAddOperand, p.operationId]}>+</button>
       </div>
     </section>
   );
@@ -23,6 +32,14 @@ function RulesEditor() {
       operands: [],
     },
   });
+
+  function handleChangeOperation(operationId, event) {
+    setRules(
+      produce((draft) => {
+        draft[operationId].operation = event.target.value;
+      })
+    );
+  }
 
   function handleOperandAdd(parentOperationId) {
     const operationId = createUniqueId();
@@ -52,6 +69,7 @@ function RulesEditor() {
         operationId={operationId}
         operation={rule.operation}
         operands={operands}
+        onChangeOperation={handleChangeOperation}
         onAddOperand={handleOperandAdd}
       />
     );
