@@ -1,0 +1,12 @@
+.rules-editor {
+  background-color: #ddd;
+}
+
+.rule-box {
+  display: flex;
+  border: 1px solid #333;
+}
+
+.operation {
+  background-color: pink;
+}
