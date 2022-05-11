@@ -58,10 +58,6 @@ function RulesEditor() {
   function renderRule(operationId) {
     const rule = rules[operationId];
 
-    if (!rule) {
-      return operationId;
-    }
-
     const operands = rule.operands.map(renderRule);
 
     return (
