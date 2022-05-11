@@ -1,4 +1,5 @@
-import { For, createSignal, createUniqueId } from 'solid-js';
+import { For, createUniqueId } from 'solid-js';
+import { createStore, produce } from 'solid-js/store';
 import './App.css';
 
 function RuleBox(p) {
@@ -16,7 +17,7 @@ function RuleBox(p) {
 }
 
 function RulesEditor() {
-  const [rules, setRules] = createSignal({
+  const [rules, setRules] = createStore({
     root: {
       operation: 'multiply',
       operands: [],
@@ -26,26 +27,19 @@ function RulesEditor() {
   function handleOperandAdd(parentOperationId) {
     const operationId = createUniqueId();
 
-    setRules((oldRules) => {
-      const parentRule = oldRules[parentOperationId];
-      const updatedOperands = [...parentRule.operands, operationId];
-
-      return {
-        ...oldRules,
-        [parentOperationId]: {
-          ...parentRule,
-          operands: updatedOperands,
-        },
-        [operationId]: {
+    setRules(
+      produce((draft) => {
+        draft[parentOperationId].operands.push(operationId);
+        draft[operationId] = {
           operation: 'multiply',
           operands: [],
-        },
-      };
-    });
+        };
+      })
+    );
   }
 
   function renderRule(operationId) {
-    const rule = rules()[operationId];
+    const rule = rules[operationId];
 
     if (!rule) {
       return operationId;
