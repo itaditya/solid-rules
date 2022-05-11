@@ -9,7 +9,7 @@ function RuleBox(p) {
         <For each={p.operands}>
           {(operand) => <div class="operand">{operand}</div>}
         </For>
-        <button onClick={[p.onAddOperand, p.operation]}>Add</button>
+        <button onClick={[p.onAddOperand, p.operationId]}>Add</button>
       </div>
     </section>
   );
@@ -17,20 +17,29 @@ function RuleBox(p) {
 
 function RulesEditor() {
   const [rules, setRules] = createSignal({
-    root: [],
+    root: {
+      operation: 'multiply',
+      operands: [],
+    },
   });
 
   function handleOperandAdd(parentOperationId) {
     const operationId = createUniqueId();
 
     setRules((oldRules) => {
-      const parentOperands = oldRules[parentOperationId];
-      const updatedOperands = [...parentOperands, operationId];
+      const parentRule = oldRules[parentOperationId];
+      const updatedOperands = [...parentRule.operands, operationId];
 
       return {
         ...oldRules,
-        [parentOperationId]: updatedOperands,
-        [operationId]: [],
+        [parentOperationId]: {
+          ...parentRule,
+          operands: updatedOperands,
+        },
+        [operationId]: {
+          operation: 'multiply',
+          operands: [],
+        },
       };
     });
   }
@@ -42,11 +51,12 @@ function RulesEditor() {
       return operationId;
     }
 
-    const operands = rule.map(renderRule);
+    const operands = rule.operands.map(renderRule);
 
     return (
       <RuleBox
-        operation={operationId}
+        operationId={operationId}
+        operation={rule.operation}
         operands={operands}
         onAddOperand={handleOperandAdd}
       />
